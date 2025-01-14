@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "pipex.h"
+
 int pipex(int pipe_fd[2], int argc, char **argv, char **envp)
 {
     pid_t   process;
@@ -40,6 +41,23 @@ int child_process();
 int main(int argc, char **argv, char **envp)
 {
     int     pipe_fd[2];
+    /*
+    int     i = 0;
+    while (envp[i])
+        ft_printf("%s\n", envp[i++]);
+    */
+    char **paths;
+    paths = get_paths(envp);
+    if (paths)
+    {
+        ft_printf("\n\n%s\n", find_cmd_path(paths, "ls"));
+        int     i = 0;
+        while (paths[i])
+            free(paths[i++]);
+        free(paths);
+    }
+    else
+        ft_printf("Error: PATH not found\n");
     if (argc == 5)
     {
         //ft_printf("PIPEX!\n");
