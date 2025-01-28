@@ -6,7 +6,7 @@
 /*   By: cayuso-f <cayuso-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:41:40 by cayuso-f          #+#    #+#             */
-/*   Updated: 2025/01/28 16:38:31 by cayuso-f         ###   ########.fr       */
+/*   Updated: 2025/01/28 17:28:36 by cayuso-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "pipex.h"
@@ -14,18 +14,17 @@
 int	first_child(int pipe_fd[2], char *cmd, t_global *files)
 {
 	char	*path_cmd;
-	char	**cmd_split;
 
 	if (dup2(files->input_fd, STDIN_FILENO) == -1)
 		return (-1);
-	cmd_split = ft_split(cmd, ' ');
-	if (!cmd_split)
+	files->cmd_split1 = ft_split(cmd, ' ');
+	if (!files->cmd_split1)
 		return (-1);
-	path_cmd = get_cmd_path(files->envp, cmd_split[0]);
+	path_cmd = get_cmd_path(files->envp, files->cmd_split1[0]);
 	close(pipe_fd[0]);
 	if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
 		return (-1);
-	if (execve(path_cmd, cmd_split, 0) == -1)
+	if (execve(path_cmd, files->cmd_split1, 0) == -1)
 		return (-1);
 	return (0);
 }
@@ -33,18 +32,17 @@ int	first_child(int pipe_fd[2], char *cmd, t_global *files)
 int	last_child(int pipe_fd[2], char *cmd, t_global *files)
 {
 	char	*path_cmd;
-	char	**cmd_split;
 
 	if (dup2(files->output_fd, STDOUT_FILENO) == -1)
 		return (-1);
 	if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
 		return (-1);
-	cmd_split = ft_split(cmd, ' ');
-	if (!cmd_split)
+	files->cmd_split2 = ft_split(cmd, ' ');
+	if (!files->cmd_split2)
 		return (-1);
-	path_cmd = get_cmd_path(files->envp, cmd_split[0]);
+	path_cmd = get_cmd_path(files->envp, files->cmd_split2[0]);
 	close(pipe_fd[1]);
-	if (execve(path_cmd, cmd_split, 0) == -1)
+	if (execve(path_cmd, files->cmd_split2, 0) == -1)
 		return (-1);
 	return (0);
 }
@@ -71,6 +69,7 @@ int	pipex(int argc, char **argv, t_global *files)
 	close(pipe_fd[1]);
 	waitpid(process1, 0, 0);
 	waitpid(process2, 0, 0);
+	free_splits(files);
 	return (0);
 }
 
@@ -80,6 +79,8 @@ int	main(int argc, char **argv, char **envp)
 
 	if (argc >= 5)
 	{
+		files.cmd_split1 = 0;
+		files.cmd_split2 = 0;
 		files.envp = envp;
 		files.input_fd = open(argv[1], O_CREAT | O_RDONLY, 0664);
 		if (files.input_fd < 0)

@@ -6,11 +6,11 @@
 #    By: cayuso-f <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/25 16:58:10 by cayuso-f          #+#    #+#              #
-#    Updated: 2024/10/02 15:56:17 by cayuso-f         ###   ########.fr        #
+#    Updated: 2025/01/28 16:57:50 by cayuso-f         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g3
 LIBFT_DIR = libft
 SRC_DIR = src
 OBJ_DIR = obj

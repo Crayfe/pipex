@@ -6,10 +6,30 @@
 /*   By: cayuso-f <cayuso-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:41:40 by cayuso-f          #+#    #+#             */
-/*   Updated: 2025/01/28 15:07:50 by cayuso-f         ###   ########.fr       */
+/*   Updated: 2025/01/28 17:58:18 by cayuso-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "pipex.h"
+
+void	free_splits(t_global *files)
+{
+	int	i;
+
+	i = 0;
+	if (files->cmd_split1)
+	{
+		while (files->cmd_split1[i])
+			free(files->cmd_split1[i++]);
+		free(files->cmd_split1);
+	}
+	i = 0;
+	if (files->cmd_split2)
+	{
+		while (files->cmd_split2[i])
+			free(files->cmd_split2[i++]);
+		free(files->cmd_split2);
+	}
+}
 
 char	*find_cmd_path(char **paths, char *cmd)
 {
