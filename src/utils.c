@@ -6,17 +6,17 @@
 /*   By: cayuso-f <cayuso-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:41:40 by cayuso-f          #+#    #+#             */
-/*   Updated: 2025/01/28 14:18:29 by cayuso-f         ###   ########.fr       */
+/*   Updated: 2025/01/28 15:07:50 by cayuso-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "pipex.h"
 
 char	*find_cmd_path(char **paths, char *cmd)
 {
-	int     i;
-	char    *cmd_path;
-	char    *aux_free;
-	
+	int		i;
+	char	*cmd_path;
+	char	*aux_free;
+
 	i = 0;
 	cmd_path = 0;
 	while (paths[i])
@@ -44,6 +44,7 @@ char	**get_paths(char **envp)
 		return (ft_split(envp[i] + 5, ':'));
 	return (0);
 }
+
 char	*get_cmd_path(char **envp, char *cmd)
 {
 	char	*cmd_path;
