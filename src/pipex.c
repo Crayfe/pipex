@@ -82,7 +82,7 @@ int	main(int argc, char **argv, char **envp)
 		files.cmd_split1 = 0;
 		files.cmd_split2 = 0;
 		files.envp = envp;
-		files.input_fd = open(argv[1], O_CREAT | O_RDONLY, 0664);
+		files.input_fd = open(argv[1], O_RDONLY, 0664);
 		if (files.input_fd < 0)
 			return (-1);
 		files.output_fd = open(argv[argc - 1],
