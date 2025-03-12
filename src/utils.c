@@ -44,7 +44,7 @@ char	*find_cmd_path(char **paths, char *cmd)
 		aux_free = ft_strjoin(paths[i], "/");
 		cmd_path = ft_strjoin(aux_free, cmd);
 		free(aux_free);
-		if (access(cmd_path, X_OK) == 0)
+		if (access(cmd_path, F_OK) == 0 && access(cmd_path, X_OK) == 0)
 			return (cmd_path);
 		else
 			free(cmd_path);
