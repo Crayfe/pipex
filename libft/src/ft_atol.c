@@ -31,8 +31,8 @@ static	int	aux_clear_spaces(const char *s)
 
 long	ft_atol(const char *nptr)
 {
-	int	i;
-	int	sign;
+	int		i;
+	int		sign;
 	long	numb;
 
 	sign = 1;

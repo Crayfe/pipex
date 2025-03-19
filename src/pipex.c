@@ -3,98 +3,80 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cayuso-f <cayuso-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: crayfe <crayfe@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:41:40 by cayuso-f          #+#    #+#             */
-/*   Updated: 2025/01/28 17:28:36 by cayuso-f         ###   ########.fr       */
+/*   Updated: 2025/03/20 00:22:54 by crayfe           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "pipex.h"
 
-int	first_child(int pipe_fd[2], char *cmd, t_global *files)
+void	perform_cmd(char *raw_cmd, char **envp)
 {
+	char	**split_cmd;
 	char	*path_cmd;
 
-	if (dup2(files->input_fd, STDIN_FILENO) == -1)
-		return (-1);
-	files->cmd_split1 = ft_split(cmd, ' ');
-	if (!files->cmd_split1)
-		return (-1);
-	path_cmd = get_cmd_path(files->envp, files->cmd_split1[0]);
-	close(pipe_fd[0]);
-	if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
-		return (-1);
-	if (execve(path_cmd, files->cmd_split1, 0) == -1)
-		return (-1);
-	return (0);
+	if (ft_strlen(raw_cmd) < 1)
+		print_error_and_exit("Error: void command", 1);
+	split_cmd = ft_split(raw_cmd, ' ');
+	path_cmd = get_cmd_path(envp, split_cmd[0]);
+	if (!path_cmd)
+	{
+		free_2d_str(split_cmd);
+		print_error_and_exit("Error: non existing command", 127);
+	}
+	if (execve(path_cmd, split_cmd, envp) == -1)
+	{
+		free_2d_str(split_cmd);
+		print_error_and_exit("Error with exec\n", 1);
+	}
 }
 
-int	last_child(int pipe_fd[2], char *cmd, t_global *files)
+void	first_child(int *pipe_fd, char **argv, char **envp)
 {
-	char	*path_cmd;
+	int		fd;
 
-	if (dup2(files->output_fd, STDOUT_FILENO) == -1)
-		return (-1);
-	if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-		return (-1);
-	files->cmd_split2 = ft_split(cmd, ' ');
-	if (!files->cmd_split2)
-		return (-1);
-	path_cmd = get_cmd_path(files->envp, files->cmd_split2[0]);
-	close(pipe_fd[1]);
-	if (execve(path_cmd, files->cmd_split2, 0) == -1)
-		return (-1);
-	return (0);
+	fd = open(argv[1], O_RDONLY, 0777);
+	if (fd == -1)
+		print_error_and_exit("Error opening file", 1);
+	dup2(pipe_fd[1], STDOUT_FILENO);
+	dup2(fd, STDIN_FILENO);
+	close(pipe_fd[0]);
+	perform_cmd(argv[2], envp);
 }
 
-int	pipex(int argc, char **argv, t_global *files)
+void	last_child(int *pipe_fd, char **argv, char **envp)
 {
-	int		pipe_fd[2];
-	pid_t	process1;
-	pid_t	process2;
+	int		fd;
 
-	if (pipe(pipe_fd) < 0)
-		return (-1);
-	process1 = fork();
-	if (process1 < 0)
-		return (-1);
-	else if (process1 == 0)
-		first_child(pipe_fd, argv[2], files);
-	process2 = fork();
-	if (process2 < 0)
-		return (-1);
-	else if (process2 == 0)
-		last_child(pipe_fd, argv[argc - 2], files);
-	close(pipe_fd[0]);
+	fd = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	if (fd == -1)
+		print_error_and_exit("Error opening file", 1);
+	dup2(pipe_fd[0], STDIN_FILENO);
+	dup2(fd, STDOUT_FILENO);
 	close(pipe_fd[1]);
-	waitpid(process1, 0, 0);
-	waitpid(process2, 0, 0);
-	free_splits(files);
-	return (0);
+	perform_cmd(argv[3], envp);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_global	files;
+	int		pipe_fd[2];
+	pid_t	pid;
 
-	if (argc >= 5)
+	if (argc == 5)
 	{
-		files.cmd_split1 = 0;
-		files.cmd_split2 = 0;
-		files.envp = envp;
-		files.input_fd = open(argv[1], O_RDONLY, 0664);
-		if (files.input_fd < 0)
-			return (-1);
-		files.output_fd = open(argv[argc - 1],
-				O_CREAT | O_WRONLY | O_TRUNC, 0664);
-		if (files.output_fd < 0)
-			return (close(files.input_fd), -1);
-		if (pipex(argc, argv, &files) < 0)
-			perror("Error\n");
-		close(files.input_fd);
-		close(files.output_fd);
+		if (pipe(pipe_fd) == -1)
+			print_error_and_exit("Failed pipe", 1);
+		pid = fork();
+		if (pid == -1)
+			print_error_and_exit("Failed fork", 1);
+		if (pid == 0)
+			first_child(pipe_fd, argv, envp);
+		waitpid(pid, 0, 0);
+		last_child(pipe_fd, argv, envp);
 	}
 	else
-		ft_printf("Error: bad number of arguments\n");
+		print_error_and_exit("Error: incorrect number of aguments\n", 1);
 	return (0);
 }

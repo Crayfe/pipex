@@ -3,32 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cayuso-f <cayuso-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: crayfe <crayfe@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:41:40 by cayuso-f          #+#    #+#             */
-/*   Updated: 2025/01/28 17:58:18 by cayuso-f         ###   ########.fr       */
+/*   Updated: 2025/03/20 00:16:24 by crayfe           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "pipex.h"
 
-void	free_splits(t_global *files)
+void	print_error_and_exit(char *error, int status)
 {
-	int	i;
-
-	i = 0;
-	if (files->cmd_split1)
-	{
-		while (files->cmd_split1[i])
-			free(files->cmd_split1[i++]);
-		free(files->cmd_split1);
-	}
-	i = 0;
-	if (files->cmd_split2)
-	{
-		while (files->cmd_split2[i])
-			free(files->cmd_split2[i++]);
-		free(files->cmd_split2);
-	}
+	if (error)
+		perror(error);
+	exit(status);
 }
 
 char	*find_cmd_path(char **paths, char *cmd)
@@ -44,7 +32,7 @@ char	*find_cmd_path(char **paths, char *cmd)
 		aux_free = ft_strjoin(paths[i], "/");
 		cmd_path = ft_strjoin(aux_free, cmd);
 		free(aux_free);
-		if (access(cmd_path, F_OK) == 0 && access(cmd_path, X_OK) == 0)
+		if (access(cmd_path, F_OK) == 0)
 			return (cmd_path);
 		else
 			free(cmd_path);

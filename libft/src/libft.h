@@ -6,7 +6,7 @@
 /*   By: cayuso-f <cayuso-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 19:11:57 by cayuso-f          #+#    #+#             */
-/*   Updated: 2025/01/28 15:04:34 by cayuso-f         ###   ########.fr       */
+/*   Updated: 2024/09/24 20:27:33 by cayuso-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include "ft_printf.h"
+# include "get_next_line.h"
 
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
@@ -52,6 +53,8 @@ void	ft_putchar_fd(char c, int fd);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
+void	free_2d_str(char **str);
+int		ft_sqrt(int num);
 
 typedef struct s_list
 {

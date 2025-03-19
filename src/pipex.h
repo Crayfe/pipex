@@ -3,31 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cayuso-f <cayuso-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: crayfe <crayfe@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:41:40 by cayuso-f          #+#    #+#             */
-/*   Updated: 2025/01/28 17:26:28 by cayuso-f         ###   ########.fr       */
+/*   Updated: 2025/03/19 19:29:24 by crayfe           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "../libft/src/libft.h"
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
-typedef struct s_global
-{
-	int		input_fd;
-	int		output_fd;
-	char	**cmd_split1;
-	char	**cmd_split2;
-	char	**envp;
-}	t_global;
+#ifndef PIPEX_H
+# define PIPEX_H
+# define FIRST 1
+# define LAST 2
+# include "../libft/src/libft.h"
+# include <stdio.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <sys/stat.h>
+# include <fcntl.h>
 
+void	print_error_and_exit(char *error, int status);
 char	*find_cmd_path(char **paths, char *cmd);
 char	**get_paths(char **envp);
 char	*get_cmd_path(char **envp, char *cmd);
-void	free_splits(t_global *files);
+
+#endif
